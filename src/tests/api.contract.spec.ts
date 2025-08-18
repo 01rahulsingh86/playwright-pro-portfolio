@@ -18,6 +18,7 @@ test.describe('@api contract', () => {
   test('FakeStore first product matches schema', async () => {
     const ctx = await request.newContext();
     const res = await ctx.get('https://fakestoreapi.com/products/1');
+    console.log('Status:', res.status(), res.statusText());
     expect(res.ok()).toBeTruthy();
 
     const json = await res.json();
