@@ -1,0 +1,24 @@
+{
+  "name": "playwright-learning",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "test:debug": "PWDEBUG=1 playwright test",
+    "report": "playwright show-report",
+    "e2e": "playwright test -g @e2e",
+    "a11y": "playwright test -g @a11y",
+    "visual": "playwright test -g @visual",
+    "format": "npx prettier -w ."
+    
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@playwright/test": "^1.54.2"
+  }
+}
