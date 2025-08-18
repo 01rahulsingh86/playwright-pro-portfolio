@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 
 test('debug baseURL + homepage', async ({ page }) => {
   console.log('Resolved baseURL:', test.info().project.use.baseURL);
-  await page.goto('/');
+  await page.goto('https://playwright.dev/');
   await expect(page).toHaveTitle(/Playwright/);
 });
 
