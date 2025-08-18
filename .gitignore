@@ -4,4 +4,4 @@ test-results
 *.log
 *.zip
 *.trace.zip
-src/__snapshots__/
+# src/__snapshots__/

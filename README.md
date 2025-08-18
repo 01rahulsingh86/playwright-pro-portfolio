@@ -188,5 +188,3 @@ MIT © Rahul Singh
 - Push → your repo will look **polished and professional**.
 
 ---
-
-Would you like me to also **design a sample screenshot/gif demo section** (so your REA
