@@ -162,20 +162,3 @@ This repo demonstrates:
 ## 📜 License
 
 MIT © Rahul Singh
-
----
-
-## 👉 Next Steps
-
-- Replace `<YOUR_USER>/<YOUR_REPO>` with your actual GitHub info
-- Commit this README
-- Push — your repo will look polished and professional
-
----
-
-👉 Next steps:
-- Replace `<YOUR_USER>/<YOUR_REPO>` with your actual GitHub info.  
-- Commit this README.  
-- Push → your repo will look **polished and professional**.
-
----

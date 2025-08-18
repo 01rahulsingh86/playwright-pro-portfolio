@@ -12,7 +12,7 @@
     "a11y": "playwright test -g @a11y",
     "visual": "playwright test -g @visual",
     "format": "npx prettier -w .",
-    "auth:gen": "ts-node src/fixtures/generateAuthState.ts",
+    "auth:gen": "node src/fixtures/generateAuthState.js",
     "test:auth": "playwright test -g @auth"
   },
   "keywords": [],
