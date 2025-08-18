@@ -1,23 +1,16 @@
 import { z } from 'zod';
 
-export const CatFactSchema = z.object({
-  fact: z.string().min(1),
-  length: z.number().int().positive(),
-});
-
-export type CatFact = z.infer<typeof CatFactSchema>;
-
-// FakeStore product schema (public demo API)
-export const ProductSchema = z.object({
+export const DummyProductSchema = z.object({
   id: z.number().int().positive(),
   title: z.string().min(1),
-  price: z.number(),
   description: z.string(),
+  price: z.number(),
+  discountPercentage: z.number(),
+  rating: z.number(),         // NOTE: number (not object)
+  stock: z.number().int(),
+  brand: z.string(),
   category: z.string(),
-  image: z.string().url(),
-  rating: z.object({
-    rate: z.number(),
-    count: z.number().int(),
-  }),
+  thumbnail: z.string().url().optional(),
+  images: z.array(z.string().url()).optional(),
 });
-export type Product = z.infer<typeof ProductSchema>;
+export type DummyProduct = z.infer<typeof DummyProductSchema>;
