@@ -1,45 +1,57 @@
 // src/tests/auth.inventory.spec.ts
 import 'dotenv/config';
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 
+// (optional) keep only Chromium for stability
+test.skip(({ browserName }) => browserName !== 'chromium');
+
+// Pin baseURL + storageState for THIS FILE
+test.use({
+  baseURL: process.env.BASE_URL || 'https://www.saucedemo.com',
+  storageState: 'src/fixtures/storageState.sauce.json',
+});
 
 test.describe('@auth Inventory', () => {
-  // run this suite only on the auth-chromium project
+  const isSauce = (base?: string) => (base ?? '').includes('saucedemo');
 
-  // helper: if redirected to login, perform login once
-  async function ensureLoggedIn(page) {
-    // if we are already on inventory, bail
-    if ((await page.url()).includes('/inventory.html')) return;
+  async function ensureLoggedIn(page: Page) {
+    if (page.url().includes('/inventory.html')) return;
 
-    // if login form is visible, do login
     const loginBtn = page.getByRole('button', { name: 'Login' });
-    if (await loginBtn.isVisible({ timeout: 2000 })) {
-      await page.getByPlaceholder('Username').fill(process.env.SAUCE_USER!);
-      await page.getByPlaceholder('Password').fill(process.env.SAUCE_PASS!);
+    const username = page.getByPlaceholder('Username');
+    const password = page.getByPlaceholder('Password');
+
+    await Promise.race([
+      loginBtn.waitFor({ state: 'visible', timeout: 8000 }),
+      page.waitForURL(/inventory\.html/, { timeout: 8000 }),
+    ]).catch(() => {});
+
+    if (await loginBtn.isVisible({ timeout: 1000 })) {
+      await username.fill(process.env.SAUCE_USER!);
+      await password.fill(process.env.SAUCE_PASS!);
       await loginBtn.click();
-      await expect(page).toHaveURL(/inventory.html/);
     }
+    await expect(page).toHaveURL(/inventory\.html/);
   }
 
-  test('add 2 items to cart and verify', async ({ page }, testInfo) => {
-    if (testInfo.project.name !== 'auth-chromium') {
-      test.skip();
-    }
-    await page.goto('/inventory.html');
+  test('add 2 items to cart and verify', async ({ page }) => {
+    // ✅ Read from project.use (NOT config.use)
+    const baseURL = String(((test.info().project.use as any).baseURL) ?? '');
+    expect(isSauce(baseURL), `Wrong baseURL: ${baseURL}`).toBeTruthy();
+
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await ensureLoggedIn(page);
-    await expect(page).toHaveURL(/inventory.html/);
 
-    // use stable data-test selectors on Sauce Demo
-    const addButtons = page.locator('[data-test^="add-to-cart-"]');
-    await addButtons.nth(0).click();
-    await addButtons.nth(1).click();
+    await expect(page.locator('.inventory_item').first()).toBeVisible();
 
-    const cartBadge = page.locator('.shopping_cart_badge');
-    await expect(cartBadge).toHaveText('2');
+    // Stable selectors
+    await page.locator('[data-test="add-to-cart-sauce-labs-backpack"]').click();
+    await page.locator('[data-test="add-to-cart-sauce-labs-bike-light"]').click();
 
-    // Cart link has a stable data-test
+    await expect(page.locator('.shopping_cart_badge')).toHaveText('2');
+
     await page.locator('[data-test="shopping-cart-link"]').click();
-    await expect(page).toHaveURL(/cart.html/);
+    await expect(page).toHaveURL(/cart\.html/);
     await expect(page.locator('.cart_item')).toHaveCount(2);
   });
 });

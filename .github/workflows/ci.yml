@@ -42,6 +42,13 @@ jobs:
     timeout-minutes: 30
 
     steps:
+      - name: Generate auth state
+        run: npx ts-node src/fixtures/generateAuthState.ts
+        env:
+          BASE_URL: https://www.saucedemo.com
+          SAUCE_USER: standard_user
+          SAUCE_PASS: secret_sauce
+
       - name: Checkout
         uses: actions/checkout@v4
 

@@ -49,15 +49,6 @@ playwright-pro-portfolio/
 
 ---
 
----
-
-test('homepage has no critical a11y issues', async ({ page }) => {
-  await page.goto('/');
-  await injectAxe(page);
-  await checkA11y(page, undefined, {
-    includedImpacts: ['critical', 'serious'],
-  });
-});
 ## 🧑‍💻 Getting Started
 
 ### 1. Clone and Install
