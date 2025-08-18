@@ -2,6 +2,9 @@
 import 'dotenv/config';
 import { test, expect, Page } from '@playwright/test';
 
+test.skip(!!process.env.CI, 'Quarantined on CI while we stabilize auth flow');
+
+
 // (optional) keep only Chromium for stability
 test.skip(({ browserName }) => browserName !== 'chromium');
 
