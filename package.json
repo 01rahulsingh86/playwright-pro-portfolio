@@ -11,14 +11,18 @@
     "e2e": "playwright test -g @e2e",
     "a11y": "playwright test -g @a11y",
     "visual": "playwright test -g @visual",
-    "format": "npx prettier -w ."
-    
+    "format": "npx prettier -w .",
+    "auth:gen": "ts-node src/fixtures/generateAuthState.ts",
+    "test:auth": "playwright test -g @auth"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@playwright/test": "^1.54.2"
+    "@playwright/test": "^1.54.2",
+    "dotenv": "^17.2.1",
+    "ts-node": "^10.9.2",
+    "zod": "^4.0.17"
   }
 }

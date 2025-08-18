@@ -15,9 +15,19 @@ export default defineConfig({
     timezoneId: 'UTC',
   },
   projects: [
+    // unauthenticated default browsers…
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
     { name: 'firefox',  use: { ...devices['Desktop Firefox'] } },
-    { name: 'webkit',   use: { ...devices['Desktop Safari'] } }
+    { name: 'webkit',   use: { ...devices['Desktop Safari'] } },
+    // authenticated browsers…
+    {
+      name: 'auth-chromium',
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: process.env.BASE_URL || 'https://www.saucedemo.com',
+        storageState: 'src/fixtures/storageState.sauce.json'
+      }
+    }
   ],
   snapshotDir: 'src/__snapshots__'
 });
