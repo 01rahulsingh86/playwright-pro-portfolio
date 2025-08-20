@@ -43,6 +43,7 @@ jobs:
 
     steps:
       - name: Generate auth state
+        if: ${{ hashFiles('src/fixtures/generateAuthState.js') != '' }}
         run: node src/fixtures/generateAuthState.js
         env:
           BASE_URL: https://www.saucedemo.com
