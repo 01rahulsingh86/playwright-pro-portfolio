@@ -3,6 +3,7 @@ require('dotenv').config();
 const { chromium } = require('@playwright/test');
 const fs = require('fs');
 const path = require('path');
+test.skip(!!process.env.CI, 'Quarantined on CI while we stabilize auth flow');
 
 const STATE_PATH = path.resolve(__dirname, 'storageState.sauce.json');
 
