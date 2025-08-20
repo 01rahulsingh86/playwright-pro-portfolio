@@ -78,6 +78,7 @@ jobs:
           name: playwright-report
           path: playwright-report
           retention-days: 7
+          overwrite: true 
 
       - name: Upload traces & screenshots
         if: failure()
