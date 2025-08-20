@@ -43,7 +43,7 @@ jobs:
 
     steps:
       - name: Generate auth state
-        run: node src/fixtures/generateAuthState.ts
+        run: node src/fixtures/generateAuthState.js
         env:
           BASE_URL: https://www.saucedemo.com
           SAUCE_USER: standard_user

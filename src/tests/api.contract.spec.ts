@@ -5,6 +5,7 @@ test('@api contract DummyJSON product schema', async () => {
   const ctx = await request.newContext({ baseURL: 'https://dummyjson.com' });
   const res = await ctx.get('/products/1');
   console.log('Status:', res.status(), res.statusText());
+  console.log("response:",res);
   expect(res.ok()).toBeTruthy();
 
   const json = await res.json();
