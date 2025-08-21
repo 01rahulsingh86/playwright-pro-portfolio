@@ -133,6 +133,12 @@ test('homepage has no critical a11y issues', async ({ page }) => {
 ```bash
 docker build -t pw-portfolio .
 docker run -it --rm pw-portfolio
+
+OR
+
+npm run docker:build
+npm run docker:test
+# report: ./playwright-report/index.html
 ```
 
 ---

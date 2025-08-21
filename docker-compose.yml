@@ -1,0 +1,14 @@
+# from repo root
+docker build -t pw-portfolio .
+docker run --rm pw-portfolio
+
+# save HTML report to your host machine
+docker run --rm -v "$PWD/playwright-report:/app/playwright-report" pw-portfolio
+
+# include auth env (if/when you re-enable those tests)
+docker run --rm \
+  -e BASE_URL=https://www.saucedemo.com \
+  -e SAUCE_USER=standard_user \
+  -e SAUCE_PASS=secret_sauce \
+  -v "$PWD/playwright-report:/app/playwright-report" \
+  pw-portfolio
