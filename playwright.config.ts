@@ -13,6 +13,10 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     timezoneId: 'UTC',
+  //   headless: true,   // headed mode
+  // launchOptions: {
+  //   slowMo: 100,     // 500ms delay
+  // },
   },
   projects: [
     // unauthenticated default browsers…
