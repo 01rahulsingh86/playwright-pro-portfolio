@@ -1,99 +1,91 @@
-name: Playwright CI
+name: CI
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
+  push:
+    branches: [main]
 
-# Auto-cancel older runs on the same branch/PR
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  api:
+  smoke:
+    if: ${{ github.event_name == 'pull_request' }}
+    name: Smoke (PR) — api+a11y+smoke e2e
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: '20', cache: 'npm' }
-      - run: npm ci
-      - run: npx playwright install --with-deps
-      - run: npx playwright test -g @api
 
-  e2e:
-    runs-on: ubuntu-latest
-    needs: api
-    steps:
-      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: '20', cache: 'npm' }
-      - run: npm ci
-      - run: npx playwright install --with-deps
-      - run: npx playwright test
-      - uses: actions/upload-artifact@v4
-        if: always()
         with:
-          name: playwright-report
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      - run: npx playwright install --with-deps
+
+      # fast subset: API + a11y + one @smoke e2e, chromium only
+      - name: Run smoke
+        run: |
+          npx playwright test -g "@api|@a11y|@smoke" --project=chromium
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: report-smoke-${{ github.run_attempt }}
           path: playwright-report
+          if-no-files-found: ignore
 
-  test:
+      - name: Upload results (traces/screens)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: results-smoke-${{ github.run_attempt }}
+          path: test-results
+          if-no-files-found: ignore
+
+  full:
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    name: Full (main) — all browsers
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-
     steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      - run: npx playwright install --with-deps
+
+      # (optional) generate auth state only if the JS exists
       - name: Generate auth state
         if: ${{ hashFiles('src/fixtures/generateAuthState.js') != '' }}
         run: node src/fixtures/generateAuthState.js
         env:
           BASE_URL: https://www.saucedemo.com
-          SAUCE_USER: standard_user
-          SAUCE_PASS: secret_sauce
+          SAUCE_USER: ${{ secrets.SAUCE_USER || 'standard_user' }}
+          SAUCE_PASS: ${{ secrets.SAUCE_PASS || 'secret_sauce' }}
 
-      - name: Checkout
-        uses: actions/checkout@v4
+      # run everything except quarantined
+      - name: Run full suite
+        run: npx playwright test --grep-invert @quarantine
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install deps
-        run: npm ci
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
-
-      - name: Run tests
-        run: npm run test
-        env:
-          # Example: override base URL in CI (optional)
-          BASE_URL: https://playwright.dev
-
-      - name: Upload HTML report
-        if: always() && github.job == 'e2e'
+      - name: Upload report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: report-full-${{ github.run_attempt }}
           path: playwright-report
-          retention-days: 7
-          overwrite: true 
-          if-no-files-found: warn     # optional: don’t fail if folder missing
+          if-no-files-found: ignore
 
-
-      - name: Upload traces & screenshots
+      - name: Upload results (traces/screens)
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results
+          name: results-full-${{ github.run_attempt }}
           path: test-results
-          retention-days: 7
-          if-no-files-found: warn    
-
-      - name: Job summary (quick links)
-        if: always()
-        run: |
-          echo "## Playwright CI" >> $GITHUB_STEP_SUMMARY
-          echo "- Report: download the **playwright-report** artifact" >> $GITHUB_STEP_SUMMARY
-          echo "- Traces/screens: see **test-results** artifact (on failures)" >> $GITHUB_STEP_SUMMARY
+          if-no-files-found: ignore
